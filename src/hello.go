@@ -3,13 +3,19 @@ package hello
 import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
+	"log"
+	"math/rand"
 	"net/http"
 )
 
-var gifs map[string]Gif
+var (
+	gifs map[string]Gif
+	keys []string
+)
 
 func init() {
 	m := martini.Classic()
+	gifs = make(map[string]Gif)
 	// Middle ware stuff
 	m.Use(render.Renderer(render.Options{
 		Directory: "public",
@@ -23,17 +29,18 @@ func init() {
 	})
 
 	m.Get("/api", func(r render.Render, req *http.Request) {
-		qs := req.URL.Query()
-		r.JSON(200, map[string]interface{}{"id": qs})
+		log.Println(len(keys))
+
+		// Return a random gifID for now
+		gifId := keys[rand.Intn(len(keys))]
+		r.JSON(200, map[string]interface{}{"id": gifId})
 	})
 
 	m.Get("/scrape", func(res http.ResponseWriter, req *http.Request) {
-		temp := scrapeSubreddit("smashbros", req)
-		extendMap(gifs, temp)
+		gifs := scrapeSubreddit("smashbros", req)
+		// extendMap(gifs, temp)
+		keys = extractKeys(gifs)
 	})
 
 	http.Handle("/", m)
-}
-
-func main() {
 }

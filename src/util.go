@@ -15,3 +15,11 @@ func extendMap(a map[string]Gif, b map[string]Gif) {
 		a[k] = v
 	}
 }
+
+func extractKeys(a map[string]Gif) []string {
+	keys := make([]string, 0, len(a))
+	for i, _ := range a {
+		keys = append(keys, i)
+	}
+	return keys
+}
