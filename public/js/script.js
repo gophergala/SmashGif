@@ -2,7 +2,6 @@
 
 var State = function() {
   this.content = new Content();
-  this.content.render();
 };
 
 // makes API calls to get the next content
@@ -40,12 +39,12 @@ Content.prototype.update = function(resp) {
 Content.prototype.getNext = function() {
   this.count += 1;
   var params = { count: this.count }; // TODO: Change this
-  var resp = this.fetch_(params);
+  this.fetch_(params);
 };
 
 Content.prototype.getFirst = function() {
   var params = { count: this.count };
-  var resp = this.fetch_(params);
+  this.fetch_(params);
 };
 
 Content.prototype.render = function() {
@@ -60,6 +59,8 @@ Content.prototype.render = function() {
   if (this.count > 0) {
     gfyCollection.init();
   }
+
+  $(".page-header h1").replaceWith("<h1>" + this.title + "</h1>");
 };
 
 var spaceHandler = function(e) {

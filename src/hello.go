@@ -45,7 +45,6 @@ func init() {
 
 	m.Get("/scrape", func(res http.ResponseWriter, req *http.Request) {
 		gifs := scrapeSubreddit("smashbros", req)
-		// extendMap(gifs, temp)
 		keys = extractKeys(gifs)
 	})
 
