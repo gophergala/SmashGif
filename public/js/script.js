@@ -1,47 +1,71 @@
 "use strict"
 
 var State = function() {
-  this.count = 0;
-  this.content = new Content(this.count);
+  this.content = new Content();
   this.content.render();
 };
 
 // makes API calls to get the next content
 State.prototype.refresh = function() {
-  this.count += 1;
   console.log("Refreshing...");
+  this.content.getNext();
 }
 
 // wrapper for the content, containing data
 // as well as helper functions to render
-var Content = function(count, resp) {
-  this.count = count;
-  if (!resp) {
-    this.getFirst();
-  }
+var Content = function() {
+  this.count = 0;
+  this.getFirst();
 }
 
+Content.prototype.onComplete_ = function(data) {
+  console.log("COMPLETE:", data);
+  this.update(data);
+  this.render();
+}
+
+Content.prototype.fetch_ = function(params) {
+  var apiUrl = window.location.origin + "/api";
+  $.get(apiUrl, params)
+    .done(this.onComplete_.bind(this));
+};
+
+Content.prototype.update = function(resp) {
+  this.id = resp.id;
+  this.title = resp.title;
+  this.game = resp.game;
+  this.upvotes = resp.upvotes;
+};
+
+Content.prototype.getNext = function() {
+  this.count += 1;
+  var params = { count: this.count }; // TODO: Change this
+  var resp = this.fetch_(params);
+};
+
 Content.prototype.getFirst = function() {
-  var apiUrl = window.location.origin + "/api"
-  $.get(apiUrl, { count: this.count })
-    .done(function(data) {
-      console.log(data);
-    });
+  var params = { count: this.count };
+  var resp = this.fetch_(params);
 };
 
 Content.prototype.render = function() {
   $(".contentWrapper").empty();
 
   var img = $("<img/>");
-  img.attr("data-id", "everyillchick");
+  img.attr("data-id", this.id);
   img.addClass("gfyitem");
 
   $(".contentWrapper").append(img);
-  gfyCollection.init();
+  console.log(this.count);
+  if (this.count > 0) {
+    gfyCollection.init();
+  }
 };
 
-var spaceHandler = function() {
-  window.state.refresh();
+var spaceHandler = function(e) {
+  if (e.keyCode === 32) {
+    window.state.refresh();
+  }
 };
 
 $(document).ready(function() {

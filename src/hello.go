@@ -33,7 +33,14 @@ func init() {
 
 		// Return a random gifID for now
 		gifId := keys[rand.Intn(len(keys))]
-		r.JSON(200, map[string]interface{}{"id": gifId})
+		gif := gifs[gifId]
+		content := gif.content
+		r.JSON(200, map[string]interface{}{
+			"id":      gifId,
+			"title":   gif.gifTitle,
+			"game":    gif.gameTitle,
+			"upvotes": content.upvotes,
+		})
 	})
 
 	m.Get("/scrape", func(res http.ResponseWriter, req *http.Request) {

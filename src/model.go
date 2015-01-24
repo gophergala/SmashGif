@@ -12,7 +12,7 @@ type Content struct {
 
 // Gfycat content
 type Gif struct {
-	Content
+	content   Content
 	gameTitle string
 	gifTitle  string
 	gifId     string

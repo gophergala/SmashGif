@@ -64,7 +64,8 @@ func scrapeSubreddit(name string, req *http.Request) map[string]Gif {
 // there is no more next button
 func scrapeRoot(url string, client *http.Client) map[string]Gif {
 	gifs = make(map[string]Gif)
-	for nextUrl := url; nextUrl != ""; {
+	depth := 1
+	for nextUrl := url; nextUrl != "" && depth > 0; depth -= 1 {
 		log.Println("Scraping next URL")
 		pageGifs, temp := scrapePage(nextUrl, client)
 		nextUrl = temp
