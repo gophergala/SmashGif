@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+var gifs map[string]Gif
+
 func init() {
 	m := martini.Classic()
 	// Middle ware stuff
@@ -16,17 +18,18 @@ func init() {
 	m.Use(martini.Static("public"))
 
 	// Request handlers
-	m.Get("/", func(r render.Render) {
+	m.Get("/", func(r render.Render, req *http.Request) {
 		r.HTML(200, "main", nil)
 	})
 
 	m.Get("/api", func(r render.Render, req *http.Request) {
 		qs := req.URL.Query()
-		r.JSON(200, map[string]interface{}{"id": qs.Get("id")})
+		r.JSON(200, map[string]interface{}{"id": qs})
 	})
 
 	http.Handle("/", m)
 }
 
 func main() {
+	gifs = scrapeSubreddit("smashbros")
 }
