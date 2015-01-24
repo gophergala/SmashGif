@@ -42,27 +42,31 @@ func prepareUrl(base string) string {
 	for k, v := range QUERY_SEARCH_PARAMS {
 		queryParams = append(queryParams, fmt.Sprintf("%s=%s", k, v))
 	}
-	return fmt.Sprintf("%s?%s", base, strings.Join(queryParams, ""))
+
+	for k, v := range GFYCAT_SUFFIX {
+		queryParams = append(queryParams, fmt.Sprintf("%s=%s", k, v))
+	}
+	return fmt.Sprintf("%s/search?%s", base, strings.Join(queryParams, "&"))
 }
 
 // Called during the init, called to fetch all the data
 // and store in an abstracted data storage
-func scrapeSubreddit(name string) map[string]Gif {
+func scrapeSubreddit(name string, req *http.Request) map[string]Gif {
 	BASE_URL := fmt.Sprintf("https://reddit.com/r/%s", name)
-	req, err := http.NewRequest("GET", BASE_URL, nil)
-	check(err)
 	c := appengine.NewContext(req)
 	client := urlfetch.Client(c)
+	log.Println("Scraping the ROOT!!")
 
 	return scrapeRoot(prepareUrl(BASE_URL), client)
 }
 
 // Given the first page of the page, scrape until
 // there is no more next button
-func scrapeRoot(url string, c *http.Client) map[string]Gif {
+func scrapeRoot(url string, client *http.Client) map[string]Gif {
 	gifs = make(map[string]Gif)
 	for nextUrl := url; nextUrl != ""; {
-		pageGifs, temp := scrapePage(nextUrl, c)
+		log.Println("Scraping next URL")
+		pageGifs, temp := scrapePage(nextUrl, client)
 		nextUrl = temp
 		extendMap(gifs, pageGifs)
 	}
@@ -86,7 +90,9 @@ func scrapePage(url string, client *http.Client) (map[string]Gif, string) {
 
 		// Gets all of the data
 		votes, err := strconv.ParseUint(s.Find("div.score.unvoted").Text(), 10, 32)
-		check(err)
+		if err != nil {
+			return
+		}
 
 		titles := s.Find("p.title").Children().First()
 		comments, exists := s.Find(".comments").Attr("href")
@@ -112,7 +118,8 @@ func scrapePage(url string, client *http.Client) (map[string]Gif, string) {
 			gifTitle,
 			gifId,
 		}
-		log.Println(gifs[gifId])
+		// log.Println(gifs[gifId])
+		log.Println(gifId)
 	})
 
 	nextUrl := ""

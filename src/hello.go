@@ -27,9 +27,13 @@ func init() {
 		r.JSON(200, map[string]interface{}{"id": qs})
 	})
 
+	m.Get("/scrape", func(res http.ResponseWriter, req *http.Request) {
+		temp := scrapeSubreddit("smashbros", req)
+		extendMap(gifs, temp)
+	})
+
 	http.Handle("/", m)
 }
 
 func main() {
-	gifs = scrapeSubreddit("smashbros")
 }
