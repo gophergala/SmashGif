@@ -20,8 +20,12 @@ func init() {
 		r.HTML(200, "main", nil)
 	})
 
+	m.Get("/api", func(r render.Render, req *http.Request) {
+		qs := req.URL.Query()
+		r.JSON(200, map[string]interface{}{"id": qs.Get("id")})
+	})
+
 	http.Handle("/", m)
-	// m.Run()
 }
 
 func main() {
