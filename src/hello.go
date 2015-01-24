@@ -19,7 +19,7 @@ func init() {
 
 	// Request handlers
 	m.Get("/", func(r render.Render, req *http.Request) {
-		r.HTML(200, "main", nil)
+		r.HTML(200, "index", nil)
 	})
 
 	m.Get("/api", func(r render.Render, req *http.Request) {
