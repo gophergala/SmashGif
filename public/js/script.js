@@ -6,7 +6,6 @@ var State = function() {
 
 // makes API calls to get the next content
 State.prototype.refresh = function() {
-  console.log("Refreshing...");
   this.content.getNext();
 }
 
@@ -18,9 +17,9 @@ var Content = function() {
 }
 
 Content.prototype.onComplete_ = function(data) {
-  console.log("COMPLETE:", data);
   this.update(data);
   this.render();
+  console.log(this.upvotes);
 }
 
 Content.prototype.fetch_ = function(params) {
@@ -70,7 +69,6 @@ Content.prototype.render = function() {
   img.addClass("gfyitem");
 
   $(".contentWrapper").append(img);
-  console.log(this.count);
   gfyCollection.init();
 
   $(".page-header h2").replaceWith("<h2>" + this.title + "</h2>");

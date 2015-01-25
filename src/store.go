@@ -36,30 +36,44 @@ func queryNext(v url.Values, c appengine.Context) Gif {
 	count, err := strconv.Atoi(v.Get("count"))
 	check(err)
 
-	if count%4 == 0 {
+	if count%4 == 3 {
 		upvoteFilter = "Content.Upvotes <="
 	}
 
-	upvotesInt := rand.Intn(1000)
+	upvotesInt := rand.Intn(200) + 200
 
 	// First call doesn't have any, default to 100 and oscillate there
 	upvotes := v.Get("upvotes")
 	if upvotes != "" {
+		log.Println("Upvotes: ", upvotes)
 		upvotesInt, err = strconv.Atoi(upvotes)
 		check(err)
 	}
 
-	log.Println("Searching for game: ", game)
+	log.Println(upvotesInt, upvoteFilter)
 	// Go doesn't allow line to start with . because of no semi colons :(
 	q := datastore.NewQuery("Gif").
-		Filter("GameTitle =", game).
-		Filter(upvoteFilter, upvotesInt).
-		Limit(10)
+		Filter("GameTitle =", game)
 
+	if upvoteFilter == "Content.Upvotes <=" {
+		q = q.Filter("Content.Upvotes >=", int(upvotesInt/5*4))
+	}
+
+	q = q.Filter(upvoteFilter, upvotesInt).
+		Limit(20)
 	var result []Gif
 	_, err = q.GetAll(c, &result)
 	check(err)
+	for _, v := range result {
+		log.Println("GIF Upvotes: ", v.Content.Upvotes)
+	}
 
+	if len(result) == 0 {
+		q = datastore.NewQuery("Gif").
+			Filter("GameTitle =", game)
+		_, err = q.GetAll(c, &result)
+		check(err)
+	}
 	return result[rand.Intn(len(result))]
 }
 
@@ -67,7 +81,6 @@ func getGame(v url.Values) string {
 	var validGames []string
 	for _, g := range games {
 		if v.Get(g) == "0" {
-			log.Println("Valid Game:", g)
 			validGames = append(validGames, g)
 		}
 	}
@@ -79,16 +92,13 @@ func getGame(v url.Values) string {
 	if len(validGames) != 0 {
 		length = len(validGames)
 	}
-	log.Println("Length: ", length)
 
 	game := "Melee" // Default to Melee because it's the best :)
 	if length == 4 {
 		index := rand.Intn(length)
-		log.Println(index, games)
 		game = games[index]
 	} else {
 		game = validGames[rand.Intn(length)]
 	}
-	log.Println(game)
 	return game
 }
