@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -27,11 +28,11 @@ var (
 	}
 
 	SORT_OPTIONS = [...]string{
-		"relevance",
-		"new",
+		//"relevance",
+		//"new",
 		"hot",
 		"top",
-		"comments",
+		//"comments",
 	}
 	re = regexp.MustCompile(`^https?:\/\/[a-z\:0-9.]+\/`)
 )
@@ -58,6 +59,7 @@ func scrapeSubreddit(name string, client *http.Client, g chan Gif) {
 
 	for _, v := range SORT_OPTIONS {
 		go scrapeRoot(prepareUrl(BASE_URL, "sort", v), client, g)
+		time.Sleep(time.Second * time.Duration(15))
 	}
 }
 
@@ -65,11 +67,13 @@ func scrapeSubreddit(name string, client *http.Client, g chan Gif) {
 // there is no more next button
 func scrapeRoot(url string, client *http.Client, g chan Gif) {
 	log.Println("Scraping root at : ", url)
-	depth := 1
+	depth := 100
 	for nextUrl := url; nextUrl != "" && depth > 0; depth -= 1 {
-		log.Println("Scraping next URL")
+		log.Println("Scraping next URL", depth, nextUrl)
+		time.Sleep(time.Second * time.Duration(5))
 		nextUrl = scrapePage(nextUrl, client, g)
 	}
+	log.Println("The querying is done for ", url)
 }
 
 func scrapePage(url string, client *http.Client, g chan Gif) string {
@@ -116,15 +120,21 @@ func scrapePage(url string, client *http.Client, g chan Gif) string {
 			gifId,
 		}
 
-		log.Println(gifId)
+		// log.Println(gifId)
 	})
 
 	nextUrl := ""
 	doc.Find("span.nextprev").Children().Each(func(i int, s *goquery.Selection) {
 		if strings.Contains(s.Text(), "next") {
 			nextUrl, _ = s.Attr("href")
+		} else {
+			log.Println(s.Text())
 		}
 	})
 
+	if nextUrl == "" {
+		log.Println(doc.Find("body").Text())
+	}
+	log.Println("Next URL: ", nextUrl)
 	return nextUrl
 }

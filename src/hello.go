@@ -47,7 +47,7 @@ func init() {
 		c := appengine.NewContext(req)
 		client := urlfetch.Client(c)
 		var g chan Gif = make(chan Gif)
-		go scrapeSubreddit("smashbros", client, g)
+		scrapeSubreddit("smashbros", client, g)
 
 		isDone := false
 		current := time.Now()
@@ -56,7 +56,7 @@ func init() {
 			select {
 			case gif := <-g:
 				storeGif(gif, c)
-			case <-time.After(time.Second * 10):
+			case <-time.After(time.Second * 60):
 				isDone = true
 			}
 		}

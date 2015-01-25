@@ -21,10 +21,9 @@
     <div class="row row-offcanvas row-offcanvas-left">
         <!-- sidebar -->
       <div class="col-xs-3 col-sm-2 sidebar-offcanvas" id="sidebar" role="navigation">
-        <a id="reddit-comment" href="#">
-          View Reddit Thread
-        </a>
-        <br>
+        <div id="logo-wrapper">
+          <img src="/img/smash_logo.png" />
+        </div>
         <h3> Filter </h3>
         <div class="checkbox">
           <label>
@@ -40,15 +39,23 @@
             <input type="checkbox" name="64"> N64
           </label>
         </div>
+        <a id="reddit-comment" href="#">
+          <h4>View Reddit Thread</h4>
+        </a>
       </div>
 
       <div class="column col-xs-9 col-sm-10">
         <div class="container">
           <div class="page-header">
-            <h2> Title goes over here </h2>
+            <h2> Loading. Refresh if it doesn't load... </h2>
           </div>
           <div class="jumbotron transparent">
             <div class="container contentWrapper">
+            </div>
+          </div>
+          <div id="next">
+            <div class="btn btn-primary next-button">
+              Press Space
             </div>
           </div>
         </div>
