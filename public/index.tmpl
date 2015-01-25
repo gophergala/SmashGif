@@ -5,12 +5,37 @@
     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
   </head>
   <body>
-    <div class="container">
-      <div class="page-header">
-        <h2> Title goes over here </h2>
+    <!-- top navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+       <div class="container">
+         <div class="navbar-header">
+           <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".sidebar-nav">
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+           </button>
+         </div>
+       </div>
+    </div>
+
+    <div class="row row-offcanvas row-offcanvas-left">
+        <!-- sidebar -->
+      <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+          <ul class="nav">
+            <li><a id="reddit-comment" href="#">View Reddit Thread</a></li>
+            <li><a href="#">Link 1</a></li>
+            <li><a href="#">Link 2</a></li>
+            <li><a href="#">Link 3</a></li>
+          </ul>
       </div>
-      <div class="jumbotron transparent">
-        <div class="container contentWrapper">
+
+      <div class="container">
+        <div class="page-header">
+          <h2> Title goes over here </h2>
+        </div>
+        <div class="jumbotron transparent">
+          <div class="container contentWrapper">
+          </div>
         </div>
       </div>
     </div>

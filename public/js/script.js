@@ -34,16 +34,22 @@ Content.prototype.update = function(resp) {
   this.title = resp.title;
   this.game = resp.game;
   this.upvotes = resp.upvotes;
+  this.reddit = resp.reddit;
 };
 
 Content.prototype.getNext = function() {
   this.count += 1;
-  var params = { count: this.count }; // TODO: Change this
+  var params = {
+    count: this.count,
+    upvotes: this.upvotes,
+  }; // TODO: Change this
   this.fetch_(params);
 };
 
 Content.prototype.getFirst = function() {
-  var params = { count: this.count };
+  var params = {
+    count: this.count
+  };
   this.fetch_(params);
 };
 
@@ -56,11 +62,10 @@ Content.prototype.render = function() {
 
   $(".contentWrapper").append(img);
   console.log(this.count);
-  if (this.count > 0) {
-    gfyCollection.init();
-  }
+  gfyCollection.init();
 
   $(".page-header h2").replaceWith("<h2>" + this.title + "</h2>");
+  $("#reddit-comment").attr("href", this.reddit);
 };
 
 var spaceHandler = function(e) {
@@ -72,4 +77,7 @@ var spaceHandler = function(e) {
 $(document).ready(function() {
   window.state = new State();
   $("body").on("keydown", spaceHandler);
+  $('[data-toggle=offcanvas]').click(function() {
+    $('.row-offcanvas').toggleClass('active');
+  });
 });

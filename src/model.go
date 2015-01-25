@@ -1,9 +1,9 @@
 package hello
 
 type Content struct {
-	comments  string
-	upvotes   uint64
-	subreddit string
+	Comments  string
+	Upvotes   int
+	Subreddit string
 }
 
 // type Content interface {
@@ -12,10 +12,10 @@ type Content struct {
 
 // Gfycat content
 type Gif struct {
-	content   Content
-	gameTitle string
-	gifTitle  string
-	gifId     string
+	Content   Content
+	GameTitle string
+	GifTitle  string
+	GifId     string
 }
 
 // Youtube content

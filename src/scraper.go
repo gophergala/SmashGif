@@ -3,8 +3,6 @@
 package hello
 
 import (
-	"appengine"
-	"appengine/urlfetch"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"log"
@@ -38,52 +36,49 @@ var (
 	re = regexp.MustCompile(`^https?:\/\/[a-z\:0-9.]+\/`)
 )
 
-func prepareUrl(base string) string {
+func prepareUrl(base string, extraKey string, extraVal string) string {
 	var queryParams []string
+
 	for k, v := range QUERY_SEARCH_PARAMS {
 		queryParams = append(queryParams, fmt.Sprintf("%s=%s", k, v))
 	}
-
 	for k, v := range GFYCAT_SUFFIX {
 		queryParams = append(queryParams, fmt.Sprintf("%s=%s", k, v))
 	}
+	queryParams = append(queryParams, fmt.Sprintf("%s=%s", extraKey, extraVal))
+
 	return fmt.Sprintf("%s/search?%s", base, strings.Join(queryParams, "&"))
 }
 
 // Called during the init, called to fetch all the data
 // and store in an abstracted data storage
-func scrapeSubreddit(name string, req *http.Request) map[string]Gif {
+func scrapeSubreddit(name string, client *http.Client, g chan Gif) {
 	BASE_URL := fmt.Sprintf("https://reddit.com/r/%s", name)
-	c := appengine.NewContext(req)
-	client := urlfetch.Client(c)
 	log.Println("Scraping the ROOT!!")
 
-	return scrapeRoot(prepareUrl(BASE_URL), client)
+	for _, v := range SORT_OPTIONS {
+		go scrapeRoot(prepareUrl(BASE_URL, "sort", v), client, g)
+	}
 }
 
 // Given the first page of the page, scrape until
 // there is no more next button
-func scrapeRoot(url string, client *http.Client) map[string]Gif {
-	gifs = make(map[string]Gif)
+func scrapeRoot(url string, client *http.Client, g chan Gif) {
+	log.Println("Scraping root at : ", url)
 	depth := 1
 	for nextUrl := url; nextUrl != "" && depth > 0; depth -= 1 {
 		log.Println("Scraping next URL")
-		pageGifs, temp := scrapePage(nextUrl, client)
-		nextUrl = temp
-		extendMap(gifs, pageGifs)
+		nextUrl = scrapePage(nextUrl, client, g)
 	}
-
-	return gifs
 }
 
-func scrapePage(url string, client *http.Client) (map[string]Gif, string) {
+func scrapePage(url string, client *http.Client, g chan Gif) string {
 	resp, err := client.Get(url)
 	check(err)
 
 	doc, err := goquery.NewDocumentFromResponse(resp)
 	check(err)
 
-	var gifs = make(map[string]Gif)
 	doc.Find(".linkflair").Each(func(i int, s *goquery.Selection) {
 		link, exists := s.Find("a.thumbnail").Attr("href")
 		if !exists {
@@ -91,7 +86,7 @@ func scrapePage(url string, client *http.Client) (map[string]Gif, string) {
 		}
 
 		// Gets all of the data
-		votes, err := strconv.ParseUint(s.Find("div.score.unvoted").Text(), 10, 32)
+		votes, err := strconv.Atoi(s.Find("div.score.unvoted").Text())
 		if err != nil {
 			return
 		}
@@ -109,17 +104,18 @@ func scrapePage(url string, client *http.Client) (map[string]Gif, string) {
 		link = re.ReplaceAllString(link, "")
 		gifId := strings.Split(link, "?")[0]
 
-		gifs[gifId] = Gif{
+		// Yield the Gif that was just scraped
+		g <- Gif{
 			Content{
-				comments:  comments,
-				upvotes:   votes,
-				subreddit: "smashbros",
+				Comments:  comments,
+				Upvotes:   votes,
+				Subreddit: "smashbros",
 			},
 			gameTitle,
 			gifTitle,
 			gifId,
 		}
-		// log.Println(gifs[gifId])
+
 		log.Println(gifId)
 	})
 
@@ -130,5 +126,5 @@ func scrapePage(url string, client *http.Client) (map[string]Gif, string) {
 		}
 	})
 
-	return gifs, nextUrl
+	return nextUrl
 }
