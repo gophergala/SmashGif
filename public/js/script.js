@@ -60,7 +60,7 @@ Content.prototype.render = function() {
     gfyCollection.init();
   }
 
-  $(".page-header h1").replaceWith("<h1>" + this.title + "</h1>");
+  $(".page-header h2").replaceWith("<h2>" + this.title + "</h2>");
 };
 
 var spaceHandler = function(e) {

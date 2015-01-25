@@ -35,6 +35,7 @@ var (
 		"top",
 		"comments",
 	}
+	re = regexp.MustCompile(`^https?:\/\/[a-z\:0-9.]+\/`)
 )
 
 func prepareUrl(base string) string {
@@ -105,7 +106,6 @@ func scrapePage(url string, client *http.Client) (map[string]Gif, string) {
 		gameTitle := titles.Text()
 		gifTitle := titles.Next().Text()
 
-		re := regexp.MustCompile(`^https?:\/\/[a-z\:0-9.]+\/`)
 		link = re.ReplaceAllString(link, "")
 		gifId := strings.Split(link, "?")[0]
 
