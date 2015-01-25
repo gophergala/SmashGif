@@ -28,11 +28,11 @@ var (
 	}
 
 	SORT_OPTIONS = [...]string{
-		//"relevance",
-		//"new",
+		"relevance",
+		"new",
 		"hot",
 		"top",
-		//"comments",
+		"comments",
 	}
 	re = regexp.MustCompile(`^https?:\/\/[a-z\:0-9.]+\/`)
 )
@@ -70,7 +70,7 @@ func scrapeRoot(url string, client *http.Client, g chan Gif) {
 	depth := 100
 	for nextUrl := url; nextUrl != "" && depth > 0; depth -= 1 {
 		log.Println("Scraping next URL", depth, nextUrl)
-		time.Sleep(time.Second * time.Duration(5))
+		time.Sleep(time.Second * time.Duration(4))
 		nextUrl = scrapePage(nextUrl, client, g)
 	}
 	log.Println("The querying is done for ", url)
@@ -91,7 +91,7 @@ func scrapePage(url string, client *http.Client, g chan Gif) string {
 
 		// Gets all of the data
 		votes, err := strconv.Atoi(s.Find("div.score.unvoted").Text())
-		if err != nil {
+		if err != nil || votes < 20 {
 			return
 		}
 

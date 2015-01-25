@@ -36,7 +36,7 @@ func queryNext(v url.Values, c appengine.Context) Gif {
 	count, err := strconv.Atoi(v.Get("count"))
 	check(err)
 
-	if count%4 == 3 {
+	if count%3 == 1 {
 		upvoteFilter = "Content.Upvotes <="
 	}
 

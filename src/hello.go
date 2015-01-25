@@ -65,6 +65,7 @@ func init() {
 
 		log.Println("DONE SCRAPING")
 		log.Printf("Scraping took %v to run.\n", after.Sub(current))
+		res.WriteHeader(200)
 	})
 
 	http.Handle("/", m)
