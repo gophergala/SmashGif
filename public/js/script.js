@@ -73,6 +73,7 @@ Content.prototype.render = function() {
 
   $(".page-header h2").replaceWith("<h2>" + this.title + "</h2>");
   $("#reddit-comment").attr("href", this.reddit);
+  $("#gfycat-url input").attr("value", "gfycat.com/" + this.id);
 };
 
 var spaceHandler = function(e) {

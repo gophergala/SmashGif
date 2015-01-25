@@ -31,6 +31,19 @@ body {
   padding-bottom: 10px;
 }
 
+#gfycat-url {
+  width: 40%;
+  margin: 10px auto 0 auto;
+}
+
+#gfycat-url span {
+  color: #6441a5;
+}
+
+#gfycat-url input {
+  width: 60%;
+}
+
 /**
  * Navbar
  */
