@@ -43,6 +43,15 @@ Content.prototype.getNext = function() {
     count: this.count,
     upvotes: this.upvotes,
   }; // TODO: Change this
+
+  $(".checkbox label input").each(function() {
+    var name = $(this).attr("name");
+    if ($(this).is(":checked")) {
+      params[name] = "1";
+    } else {
+      params[name] = "0";
+    }
+  });
   this.fetch_(params);
 };
 

@@ -1,4 +1,9 @@
+html {
+  height: 100%;
+}
+
 body {
+  height: 100%;
   background-image: url("../img/background.png");
 }
 
@@ -24,21 +29,35 @@ body {
   background-color: rgba(255, 255, 255, 0);
 }
 
+#reddit-comment {
+  color: #666676;
+}
+
+.row.row-offcanvas {
+  height: 100%;
+}
+
+#sidebar h3, #sidebar .checkbox {
+  color: #8c8c9c;
+}
+
 /**
  * Sidebar
  */
 #sidebar {
+  display: block;
+  background-color: #000;
   height: 100%;
   padding-right: 0;
-  padding-top: 20px;
-  position: fixed;
+  padding-left: 30px;
+  padding-top: 100px;
+  position: relative;
 }
 #sidebar .nav {
   width: 95%;
 }
 #sidebar li {
   border:0 #f2f2f2 solid;
-  border-bottom-width:1px;
 }
 
 /* collapsed sidebar styles */
